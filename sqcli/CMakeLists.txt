@@ -6,7 +6,8 @@ set(
     SRC_LIST
     main.cpp 
     sqcli/sqcli.cpp
-    sqcli/options/options.cpp
+    options/options.cpp
+    io_controller/io_controller.cpp
 )
 
 set(
@@ -16,7 +17,6 @@ set(
     ${SQLite3_LIBRARIES}
     ${Boost_LIBRARIES} 
 )
-
 
 set(
     FLAG_LIST

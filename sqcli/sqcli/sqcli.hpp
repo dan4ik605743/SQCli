@@ -1,26 +1,23 @@
 #ifndef SQCLI_HPP
 #define SQCLI_HPP
 
+#include "io_controller/io_controller.hpp"
 #include "options/options.hpp"
-#include "sqlite3.h"
 
 #include <string>
 
 class sqcli {
    public:
-    explicit sqcli(const std::string& path_db);
-    ~sqcli();
+    explicit sqcli(const std::string& path_db) noexcept;
 
-    void start();
+    void run();
 
    private:
-    friend class options;
-
-    std::string path_db_;
-    sqlite3* db_;
-    char* err_msg_;
-    int status_;
+    io_controller io_ctrlr_;
     options options_;
+
+    bool exit_;
+    std::string path_db_;
 };
 
 #endif  // SQCLI_HPP

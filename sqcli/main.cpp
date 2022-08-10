@@ -19,12 +19,12 @@ int main(int argc, char** argv) {
         boost::program_options::store(
             boost::program_options::parse_command_line(argc, argv, desc), vm);
 
-        if (vm.count("help")) {
+        if (vm.contains("help")) {
             cout << "Usage: sqcli [options ...]\n\n" << desc;
             return 1;
         }
 
-        if (vm.count("database")) {
+        if (vm.contains("database")) {
             db_path = vm["database"].as<string>();
         }
 
@@ -34,8 +34,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    sqcli db(db_path);
-    db.start();
+    sqcli sqcli(db_path);
+    sqcli.run();
 
     return 0;
 }

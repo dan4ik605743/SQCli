@@ -1,0 +1,4 @@
+Checks: 'clang-diagnostic-*,clang-analyzer-*,boost-*,bugprone-*,concurrency-*,cppcoreguidelines-*,performance-*,readability-*,modernize-*,misc-*,cert-*,-modernize-use-trailing-return-type,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-bugprone-easily-swappable-parameters'
+WarningsAsErrors: true
+AnalyzeTemporaryDtors: false
+FormatStyle: chromium
