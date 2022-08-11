@@ -5,10 +5,10 @@ stdenv.mkDerivation {
 
   /*src = fetchgit {
     url = "https://github.com/dan4ik605743/SQCli";
-    sha256 = "";
+    sha256 = "sha256-FxMx+a7Y3Es+6a7PTWKgTp5hitEXMRdqrwwiuicnbb8=";
     deepClone = true;
   };*/
-  src = ../sqcli;
+  src = ./.;
 
   nativeBuildInputs = [ 
     cmake 
