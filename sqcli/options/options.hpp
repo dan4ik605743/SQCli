@@ -58,9 +58,6 @@ class options {
     get_list_fields() const noexcept;
 
     [[nodiscard]] bool status_check() const noexcept;
-    [[nodiscard]] bool check_selected_table() const noexcept;
-    [[nodiscard]] bool check_field(const std::string& field,
-                                   std::size_t* index = nullptr) const noexcept;
 
    private:
     std::vector<std::string> list_tables_;

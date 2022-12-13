@@ -277,7 +277,7 @@ void io_controller::insert_data_process() {
                 fmt::print(
                     "Введите данные для поле '{}' ({}) (Обязательное)\n\n: ",
                     obj.at(i).at("name"), obj.at(i).at("type"));
-                std::cin >> tmp;
+                std::getline(std::cin >> std::ws, tmp);
                 std::cout << '\n';
 
                 insert_data.append(tmp + ",");
@@ -317,6 +317,12 @@ void io_controller::insert_data_process() {
                         return;
                 }
             }
+        }
+
+        if (insert_fields.empty()) {
+            clrscr();
+            std::cout << "SQCli error: no field found\n\n";
+            return;
         }
 
         insert_fields.erase(insert_fields.size() - 1, 1);
@@ -374,7 +380,7 @@ void io_controller::delete_data_process() {
         field_list_process(false);
 
         std::cout << "Введите условие для удаления данных\n\n: ";
-        std::cin >> args;
+        std::getline(std::cin >> std::ws, args);
         std::cout << '\n';
 
         on_delete_data_(name_table_, args);
