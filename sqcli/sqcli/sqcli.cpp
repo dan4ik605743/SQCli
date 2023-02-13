@@ -1,9 +1,4 @@
 #include "sqcli/sqcli.hpp"
-#include "fmt/core.h"
-#include "sqlite3.h"
-
-#include <functional>
-#include <iostream>
 
 sqcli::sqcli(const std::string& path_db) noexcept
     : options_{path_db}, exit_{false}, path_db_{path_db} {}
@@ -50,10 +45,11 @@ void sqcli::run() {
                                notnull, pk, ai);
         });
 
-    io_ctrlr_.set_on_delete_field(
-        [this](const std::string& table, const std::string& field) {
-            options_.delete_field(table, field);
-        });
+    io_ctrlr_.set_on_rename_field([this](const std::string& table,
+                                         const std::string& field,
+                                         const std::string& new_field) {
+        options_.rename_field(table, field, new_field);
+    });
 
     io_ctrlr_.set_on_create_table(
         [this](const std::string& table) { options_.create_table(table); });

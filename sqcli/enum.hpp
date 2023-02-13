@@ -17,7 +17,7 @@ enum class menu_options : std::uint8_t {
     UPDATE_DATA = 9,
     DELETE_DATA = 10,
     DELETE_TABLE = 11,
-    DELETE_FIELD = 12,
+    RENAME_FIELD = 12,
     CLI_COMMAND = 13,
     ON_EXIT = 14,
     MAX_VALUE = 15

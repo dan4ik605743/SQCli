@@ -1,0 +1,8 @@
+{
+    "cmake.debugConfig": {
+        "args": [
+            "-d",
+            "/home/opc/code/git/SQCli/build/sqcli/test.db"
+        ]
+    },
+}

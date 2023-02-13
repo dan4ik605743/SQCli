@@ -1,19 +1,11 @@
 find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
 find_package(SQLite3 REQUIRED)
-find_package(Threads REQUIRED)
 
-set(
-    SRC_LIST
-    main.cpp 
-    sqcli/sqcli.cpp
-    options/options.cpp
-    io_controller/io_controller.cpp
-)
+file(GLOB_RECURSE SRC_LIST *.cpp)
 
 set(
     LIB_LIST
     PRIVATE fmt
-    ${CMAKE_THREAD_LIBS_INIT} 
     ${SQLite3_LIBRARIES}
     ${Boost_LIBRARIES} 
 )

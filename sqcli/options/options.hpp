@@ -2,15 +2,25 @@
 #define OPTIONS_HPP
 
 #include "enum.hpp"
-#include "sqlite3.h"
 
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
 
+#include <sqlite3.h>
+
 class options {
    public:
+    using data_list = std::vector<std::string>;
+    using ptr_data_list = std::vector<std::string>*;
+    using c_ref_data_list = const std::vector<std::string>&;
+
+    using other_data = std::vector<std::map<std::string, std::string>>;
+    using ptr_other_data = std::vector<std::map<std::string, std::string>>*;
+    using c_ref_other_data =
+        const std::vector<std::map<std::string, std::string>>&;
+
     explicit options(const std::string& path_db) noexcept;
     options(const options&) = delete;
     options(options&&) = delete;
@@ -39,7 +49,9 @@ class options {
                    choice_variant notnull,
                    choice_variant pk,
                    choice_variant ai);
-    void delete_field(const std::string& table, const std::string& field);
+    void rename_field(const std::string& table,
+                      const std::string& field,
+                      const std::string& new_field);
 
     void table_list();
     void field_list(const std::string& table);
@@ -48,31 +60,22 @@ class options {
     void cli_command(const std::string& cmd);
 
     [[nodiscard]] sqlite3* get_db() const noexcept;
-    [[nodiscard]] const std::vector<std::string>& get_list_tables()
-        const noexcept;
-    [[nodiscard]] const std::vector<std::map<std::string, std::string>>&
-    get_list_data() const noexcept;
-    [[nodiscard]] const std::vector<std::map<std::string, std::string>>&
-    get_list_cli_info() const noexcept;
-    [[nodiscard]] const std::vector<std::map<std::string, std::string>>&
-    get_list_fields() const noexcept;
+    [[nodiscard]] c_ref_data_list get_list_tables() const noexcept;
+    [[nodiscard]] c_ref_other_data get_list_data() const noexcept;
+    [[nodiscard]] c_ref_other_data get_list_cli_info() const noexcept;
+    [[nodiscard]] c_ref_other_data get_list_fields() const noexcept;
 
     [[nodiscard]] bool status_check() const noexcept;
 
    private:
-    std::vector<std::string> list_tables_;
-    std::vector<std::map<std::string, std::string>> list_fields_;
-    std::vector<std::map<std::string, std::string>> list_data_;
-    std::vector<std::map<std::string, std::string>> list_cli_info_;
+    data_list list_tables_;
+    other_data list_fields_;
+    other_data list_data_;
+    other_data list_cli_info_;
 
-    std::uint8_t check_default_id;
-    std::uint8_t check_autoincrement_;
-    std::uint8_t check_primary_key_;
-    std::uint8_t check_null_;
-
-    sqlite3* db_;
-    char* err_msg_;
-    std::int32_t status_;
+    sqlite3* db_ = nullptr;
+    char* err_msg_ = nullptr;
+    std::int32_t status_ = 0;
 };
 
 #endif  // OPTIONS_HPP

@@ -11,7 +11,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(Boost_USE_MULTITHREADED ON)
 
 add_subdirectory(sqcli)
 add_subdirectory(modules)

@@ -2,7 +2,9 @@
 #define IO_CONTROLLER_HPP
 
 #include "enum.hpp"
-#include "sqlite3.h"
+#include "options/options.hpp"
+
+#include <sqlite3.h>
 
 #include <cstdint>
 #include <functional>
@@ -39,18 +41,16 @@ class io_controller {
                                             choice_variant notnull,
                                             choice_variant pk,
                                             choice_variant ai)>;
-    using on_delete_field =
-        std::function<void(const std::string& table, const std::string& field)>;
+    using on_rename_field = std::function<void(const std::string& table,
+                                               const std::string& field,
+                                               const std::string& new_field)>;
     using on_create_table = std::function<void(const std::string& table)>;
 
     using on_get_db = std::function<sqlite3*()>;
-    using on_get_list_tables = std::function<const std::vector<std::string>&()>;
-    using on_get_list_data =
-        std::function<const std::vector<std::map<std::string, std::string>>&()>;
-    using on_get_list_fields =
-        std::function<const std::vector<std::map<std::string, std::string>>&()>;
-    using on_get_cli_info =
-        std::function<const std::vector<std::map<std::string, std::string>>&()>;
+    using on_get_list_tables = std::function<options::c_ref_data_list()>;
+    using on_get_list_data = std::function<options::c_ref_other_data()>;
+    using on_get_list_fields = std::function<options::c_ref_other_data()>;
+    using on_get_cli_info = std::function<options::c_ref_other_data()>;
 
     void menu();
 
@@ -68,7 +68,7 @@ class io_controller {
     void set_on_update_data(on_update_data on_update_data);
     void set_on_delete_data(on_delete_data on_delete_data);
     void set_on_add_field(on_add_field on_add_field);
-    void set_on_delete_field(on_delete_field on_delete_field);
+    void set_on_rename_field(on_rename_field on_rename_field);
     void set_on_create_table(on_create_table on_create_table);
 
     void set_on_get_db(on_get_db on_get_db);
@@ -100,7 +100,7 @@ class io_controller {
     on_update_data on_update_data_;
     on_delete_data on_delete_data_;
     on_add_field on_add_field_;
-    on_delete_field on_delete_field_;
+    on_rename_field on_rename_field_;
     on_create_table on_create_table_;
 
     on_get_db on_get_db_;
@@ -119,7 +119,7 @@ class io_controller {
     void update_data_process();
     void delete_data_process();
     void add_field_process(bool create_table = false);
-    void delete_field_process();
+    void rename_field_process();
     void create_table_process();
     [[nodiscard]] bool check_selected_table() const noexcept;
     [[nodiscard]] bool check_field(const std::string& field,

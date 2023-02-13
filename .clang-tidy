@@ -1,4 +1,4 @@
-Checks: 'clang-diagnostic-*,clang-analyzer-*,boost-*,bugprone-*,concurrency-*,cppcoreguidelines-*,performance-*,readability-*,modernize-*,misc-*,cert-*,-modernize-use-trailing-return-type,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-bugprone-easily-swappable-parameters'
+Checks: 'clang-diagnostic-*,clang-analyzer-*,boost-*,bugprone-*,concurrency-*,cppcoreguidelines-*,performance-*,readability-*,modernize-*,misc-*,cert-*,-modernize-use-trailing-return-type,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-bugprone-easily-swappable-parameters, -cppcoreguidelines-non-private-member-variables-in-classes, -misc-non-private-member-variables-in-classes, -cppcoreguidelines-owning-memory, -cppcoreguidelines-pro-bounds-array-to-pointer-decay, -modernize-avoid-c-arrays, -cppcoreguidelines-avoid-c-arrays, -clang-analyzer-security.insecureAPI.strcpy, -cert-oop54-cpp, -bugprone-exception-escape, -cert-dcl21-cpp, -readability-identifier-length'
 WarningsAsErrors: true
 AnalyzeTemporaryDtors: false
 FormatStyle: chromium
