@@ -23,4 +23,3 @@ cmake --build .
 ```
 sqcli -d /path/to/sample.db
 ```
-//TODO dockerCI
