@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+namespace sqcli {
 class io_controller {
    public:
     using on_start = std::function<void(std::string& path_db)>;
@@ -52,6 +53,13 @@ class io_controller {
     using on_get_list_fields = std::function<options::c_ref_other_data()>;
     using on_get_cli_info = std::function<options::c_ref_other_data()>;
 
+    io_controller() noexcept;
+    io_controller(const io_controller&) = delete;
+    io_controller& operator=(const io_controller&) = delete;
+    io_controller& operator=(io_controller&&) = delete;
+    io_controller(io_controller&&) = delete;
+    ~io_controller() noexcept = default;
+
     void menu();
 
     void set_on_start(on_start on_start);
@@ -78,13 +86,12 @@ class io_controller {
     void set_on_get_cli_info(on_get_cli_info on_get_cli_info);
 
    private:
-    std::uint16_t menu_it_;
+    std::uint16_t menu_it_ = 0;
     std::string path_db_;
     std::string name_table_;
-    bool select_table_;
 
-    menu_options menu_options_;
-    choice_variant choice_variant_;
+    menu_options menu_options_ = menu_options::ON_EXIT;
+    choice_variant choice_variant_ = choice_variant::NO;
 
     on_start on_start_;
     on_exit on_exit_;
@@ -127,5 +134,5 @@ class io_controller {
     bool table_list_process(bool clear_screen = true);
     bool status_check_process(bool open_database = false);
 };
-
+}  // namespace sqcli
 #endif  // IO_CONTROLLER_HPP

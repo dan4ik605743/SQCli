@@ -15,4 +15,6 @@ function(initialize_submodule DIRECTORY)
 endfunction(initialize_submodule)
 
 initialize_submodule(modules/fmt)
+initialize_submodule(modules/spdlog)
 add_subdirectory(fmt)
+add_subdirectory(spdlog)

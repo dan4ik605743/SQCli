@@ -39,7 +39,7 @@ inline void insert_value_to_enum(std::uint8_t value, T& enum_obj) {
         return;
     }
 
-    throw std::invalid_argument("SQCli error: unknown choice selected\n");
+    throw std::invalid_argument("Unknown choice selected");
 }
 
 #endif  // ENUM_HPP

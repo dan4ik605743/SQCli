@@ -5,7 +5,8 @@ file(GLOB_RECURSE SRC_LIST *.cpp)
 
 set(
     LIB_LIST
-    PRIVATE fmt
+    PRIVATE fmt::fmt-header-only
+    PRIVATE spdlog::spdlog_header_only
     ${SQLite3_LIBRARIES}
     ${Boost_LIBRARIES} 
 )

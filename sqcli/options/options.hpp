@@ -10,6 +10,7 @@
 
 #include <sqlite3.h>
 
+namespace sqcli {
 class options {
    public:
     using data_list = std::vector<std::string>;
@@ -77,5 +78,6 @@ class options {
     char* err_msg_ = nullptr;
     std::int32_t status_ = 0;
 };
+}  // namespace sqcli
 
 #endif  // OPTIONS_HPP

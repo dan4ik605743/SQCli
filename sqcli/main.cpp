@@ -1,4 +1,4 @@
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <boost/program_options.hpp>
 
 #include <iostream>
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    sqcli sqcli(db_path);
+    sqcli::sqcli sqcli(db_path);
     sqcli.run();
 
     return 0;

@@ -1,7 +1,10 @@
 #include "io_controller/io_controller.hpp"
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <boost/process.hpp>
+
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 #include <exception>
 #include <iostream>
@@ -19,6 +22,18 @@ void refresh_stdin() {
 }
 }  // namespace
 
+namespace sqcli {
+io_controller::io_controller() noexcept {
+    const auto sqcli_log = spdlog::stdout_color_mt("SQCli");
+    const auto sql_log = spdlog::stdout_color_mt("SQL");
+
+    // disable eol
+    sqcli_log->set_formatter(std::make_unique<spdlog::pattern_formatter>(
+        "[%n] [%^%l%$] %v", spdlog::pattern_time_type::local, std::string("")));
+    sql_log->set_formatter(std::make_unique<spdlog::pattern_formatter>(
+        "[%n] [%^%l%$] %v", spdlog::pattern_time_type::local, std::string("")));
+}
+
 void io_controller::menu() {
     if (path_db_.empty()) {
         clrscr();
@@ -29,6 +44,14 @@ void io_controller::menu() {
             on_exit_();
             return;
         }
+    }
+
+    if (std::cin.eof()) {
+        clrscr();
+        spdlog::get("SQCli")->info("Exit successfully\n\n");
+
+        on_exit_();
+        return;
     }
 
     fmt::print(
@@ -47,16 +70,10 @@ void io_controller::menu() {
         "12)\tПереименовать поле из таблицы\n "
         "13)\tВыполнить SQL команду вручную\n "
         "14)\tЗавершить работу "
-        "с базой данных\n\nВыбранная таблица: '{}'\n\n: ",
-        path_db_, name_table_.empty() ? "NONE" : name_table_);
-
-    if (std::cin.eof()) {
-        clrscr();
-        fmt::print("SQCli: exit successfully\n");
-
-        on_exit_();
-        return;
-    }
+        "с базой данных\n\n",
+        path_db_);
+    spdlog::get("SQCli")->info("Выбранная таблица: '{}'\n\n: ",
+                               name_table_.empty() ? "NONE" : name_table_);
 
     try {
         if (std::cin.fail()) {
@@ -69,7 +86,7 @@ void io_controller::menu() {
         }
     } catch (const std::exception& ex) {
         clrscr();
-        fmt::print(stderr, "{}\n", ex.what());
+        spdlog::get("SQCli")->error("{}\n\n", ex.what());
         return;
     }
 
@@ -116,12 +133,10 @@ void io_controller::menu() {
             break;
         case menu_options::ON_EXIT:
             clrscr();
-            fmt::print("SQCli: exit successfully\n");
+            spdlog::get("SQCli")->info("Exit successfully\n\n");
             on_exit_();
             break;
         default:
-            clrscr();
-            fmt::print("SQCli error: unknown method selected\n\n");
             break;
     }
 }
@@ -139,11 +154,11 @@ void io_controller::cli_command_process() {
 
         if (obj.empty()) {
             clrscr();
-            fmt::print("Вывод команды:\n\n NONE\n\n");
+            spdlog::get("SQCli")->info("Вывод команды:\n\n NONE\n\n");
             status_check_process();
         } else {
             clrscr();
-            fmt::print("Вывод команды:\n\n");
+            spdlog::get("SQCli")->info("Вывод команды:\n\n");
             const auto size_obj = obj.size();
             for (std::size_t i = 0; i != size_obj; ++i) {
                 for (const auto& [field_name, argv] : obj.at(i)) {
@@ -161,16 +176,16 @@ void io_controller::cli_command_process() {
 
 bool io_controller::status_check_process(bool open_database) {
     if (open_database && on_status_check_()) {
-        fmt::print("SQL: open database successfully\n\n");
+        spdlog::get("SQL")->info("Open database successfully\n\n");
         return true;
     }
 
     if (on_status_check_()) {
-        fmt::print("SQL: successfully\n\n");
+        spdlog::get("SQL")->info("Successfully\n\n");
         return true;
     }
 
-    fmt::print(stderr, "SQL error: {}\n\n", sqlite3_errmsg(on_get_db_()));
+    spdlog::get("SQL")->error("{}\n\n", sqlite3_errmsg(on_get_db_()));
     return false;
 }
 
@@ -180,7 +195,8 @@ void io_controller::field_list_process(bool clear_screen) {
             clrscr();
         }
 
-        fmt::print("Поля созданные в таблице: '{}'\n\n", name_table_);
+        spdlog::get("SQCli")->info("Поля созданные в таблице: '{}'\n\n",
+                                   name_table_);
 
         on_field_list_(name_table_);
         status_check_process();
@@ -203,7 +219,7 @@ bool io_controller::table_list_process(bool clear_screen) {
         clrscr();
     }
 
-    fmt::print("Таблицы созданные в базе данных:\n\n");
+    spdlog::get("SQCli")->info("Таблицы созданные в базе данных:\n\n");
 
     on_table_list_();
     const auto& obj = on_get_list_tables_();
@@ -302,7 +318,7 @@ void io_controller::insert_data_process() {
                     insert_value_to_enum(it, choice_variant_);
                 } catch (const std::exception& ex) {
                     clrscr();
-                    fmt::print(stderr, "{}\n", ex.what());
+                    spdlog::get("SQCli")->error("{}\n\n", ex.what());
                     return;
                 }
 
@@ -328,7 +344,7 @@ void io_controller::insert_data_process() {
 
         if (insert_fields.empty()) {
             clrscr();
-            fmt::print("SQCli error: no field found\n\n");
+            spdlog::get("SQCli")->error("No field found\n\n");
             return;
         }
 
@@ -375,7 +391,7 @@ void io_controller::update_data_process() {
             status_check_process();
         } else {
             clrscr();
-            fmt::print("SQCli error: unknown field selected\n\n");
+            spdlog::get("SQCli")->error("Unknown field selected\n\n");
         }
     }
 }
@@ -423,7 +439,7 @@ void io_controller::add_field_process(bool create_table) {
             insert_value_to_enum(it, notnull);
         } catch (const std::exception& ex) {
             clrscr();
-            fmt::print(stderr, "{}\n", ex.what());
+            spdlog::get("SQCli")->error("{}\n\n", ex.what());
             return;
         }
         fmt::print("\n");
@@ -436,7 +452,7 @@ void io_controller::add_field_process(bool create_table) {
                 insert_value_to_enum(it, pk);
             } catch (const std::exception& ex) {
                 clrscr();
-                fmt::print(stderr, "{}\n", ex.what());
+                spdlog::get("SQCli")->error("{}\n\n", ex.what());
                 return;
             }
             fmt::print("\n");
@@ -450,7 +466,7 @@ void io_controller::add_field_process(bool create_table) {
                     insert_value_to_enum(it, ai);
                 } catch (const std::exception& ex) {
                     clrscr();
-                    fmt::print(stderr, "{}\n", ex.what());
+                    spdlog::get("SQCli")->error("{}\n\n", ex.what());
                     return;
                 }
                 fmt::print("\n");
@@ -486,7 +502,7 @@ void io_controller::rename_field_process() {
             status_check_process();
         } else {
             clrscr();
-            fmt::print("SQCli error: unknown field selected\n\n");
+            spdlog::get("SQCli")->error("Unknown field selected\n\n");
         }
     }
 }
@@ -511,7 +527,7 @@ void io_controller::create_table_process() {
         clrscr();
 
         name_table_.clear();
-        fmt::print(stderr, "{}\n", ex.what());
+        spdlog::get("SQCli")->error("{}\n\n", ex.what());
 
         return;
     }
@@ -537,7 +553,7 @@ bool io_controller::list_data_process(bool clear_screen) {
             clrscr();
         }
 
-        fmt::print("Данные из таблицы: '{}'\n\n", name_table_);
+        spdlog::get("SQCli")->info("Данные из таблицы: '{}'\n\n", name_table_);
 
         on_list_data_(name_table_);
         status_check_process();
@@ -572,10 +588,10 @@ void io_controller::select_table_process() {
             name_table_ = tmp;
 
             clrscr();
-            fmt::print("SQCli: successfully\n\n");
+            spdlog::get("SQCli")->info("Successfully\n\n");
         } else {
             clrscr();
-            fmt::print("SQCli error: unknown choice selected\n\n");
+            spdlog::get("SQCli")->error("Unknown choice selected\n\n");
         }
     }
 }
@@ -583,7 +599,7 @@ void io_controller::select_table_process() {
 bool io_controller::check_selected_table() const noexcept {
     if (name_table_.empty()) {
         clrscr();
-        fmt::print("SQCli error: table not select\n\n");
+        spdlog::get("SQCli")->error("Table not select\n\n");
 
         return false;
     }
@@ -692,3 +708,4 @@ void io_controller::set_on_status_check(on_status_check on_status_check) {
 void io_controller::set_on_select_table(on_select_table on_select_table) {
     on_select_table_ = std::move(on_select_table);
 }
+}  // namespace sqcli

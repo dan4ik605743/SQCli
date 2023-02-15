@@ -6,6 +6,7 @@
 
 #include <string>
 
+namespace sqcli {
 class sqcli {
    public:
     explicit sqcli(const std::string& path_db) noexcept;
@@ -19,5 +20,5 @@ class sqcli {
     bool exit_;
     std::string path_db_;
 };
-
+}  // namespace sqcli
 #endif  // SQCLI_HPP

@@ -1,5 +1,6 @@
 #include "sqcli/sqcli.hpp"
 
+namespace sqcli {
 sqcli::sqcli(const std::string& path_db) noexcept
     : options_{path_db}, exit_{false}, path_db_{path_db} {}
 
@@ -87,3 +88,4 @@ void sqcli::run() {
         io_ctrlr_.menu();
     }
 }
+}  // namespace sqcli

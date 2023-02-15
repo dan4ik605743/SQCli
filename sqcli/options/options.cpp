@@ -1,6 +1,6 @@
 #include "options/options.hpp"
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include <algorithm>
 
@@ -10,7 +10,7 @@ int callback_data_list(void* data,
                        char** argv,
                        [[maybe_unused]] char** field_name) {
     for (std::int32_t i = 0; i < argc; i++) {
-        static_cast<options::ptr_data_list>(data)->emplace_back(
+        static_cast<sqcli::options::ptr_data_list>(data)->emplace_back(
             argv[i] != nullptr ? argv[i] : "NULL");
     }
 
@@ -18,7 +18,7 @@ int callback_data_list(void* data,
 }
 
 int callback_other_data(void* data, int argc, char** argv, char** field_name) {
-    auto* obj = static_cast<options::ptr_other_data>(data);
+    auto* obj = static_cast<sqcli::options::ptr_other_data>(data);
     obj->emplace_back();
 
     for (std::int32_t i = 0; i < argc; ++i) {
@@ -30,6 +30,7 @@ int callback_other_data(void* data, int argc, char** argv, char** field_name) {
 }
 }  // namespace
 
+namespace sqcli {
 options::options(const std::string& path_db) noexcept
     : status_{sqlite3_open(path_db.c_str(), &db_)} {}
 
@@ -234,3 +235,4 @@ options::c_ref_other_data options::get_list_fields() const noexcept {
 options::c_ref_other_data options::get_list_cli_info() const noexcept {
     return list_cli_info_;
 }
+}  // namespace sqcli
